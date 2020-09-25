@@ -1,4 +1,4 @@
-const WEB_URI = "/webservice/services/concert-service";
+const WEB_URI = "/services/concert-service";
 
 export const FetchAPI = {
 

@@ -1,5 +1,6 @@
 package se325.assignment01.concert.common.dto;
 
+import javax.persistence.ElementCollection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,9 @@ public class ConcertDTO {
     private String title;
     private String imageName;
     private String blurb;
+    @ElementCollection
     private List<LocalDateTime> dates = new ArrayList<>();
+    @ElementCollection
     private List<PerformerDTO> performers = new ArrayList<>();
 
     public ConcertDTO() {

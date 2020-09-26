@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "SEAT")
+@Table(name = "SEATS")
 public class Seat {
 
     // TODO Implement this class.
@@ -21,13 +21,17 @@ public class Seat {
 	@Id
 	@GeneratedValue
 	private Long id;
+
+	@Column
 	private String label;
+
 	private boolean	isBooked;
+
+	@Column
 	private LocalDateTime date;
 	private BigDecimal price;
-	@ManyToOne
-	@JoinColumn(name = "BOOKING_ID")
-	private Booking booking;
+//	@ManyToOne
+//	private Booking booking;
 
 	public Seat() {}
 
@@ -43,8 +47,6 @@ public class Seat {
 		this.id = id;
 	}
 
-	@JsonSerialize(using = LocalDateTimeSerializer.class)
-	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	public LocalDateTime getDate() {
 		return date;
 	}

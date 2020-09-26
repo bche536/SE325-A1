@@ -1,6 +1,12 @@
 package se325.assignment01.concert.common.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
+import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
+
 import javax.persistence.ElementCollection;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +29,9 @@ public class ConcertDTO {
     private String imageName;
     private String blurb;
     @ElementCollection
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private List<LocalDateTime> dates = new ArrayList<>();
-    @ElementCollection
     private List<PerformerDTO> performers = new ArrayList<>();
 
     public ConcertDTO() {
@@ -75,10 +82,15 @@ public class ConcertDTO {
     }
 
     @ElementCollection
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public List<LocalDateTime> getDates() {
         return dates;
     }
 
+    @ElementCollection
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public void setDates(List<LocalDateTime> dates) {
         this.dates = dates;
     }

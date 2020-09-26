@@ -6,14 +6,17 @@ import se325.assignment01.concert.service.domain.Concert;
 import se325.assignment01.concert.service.mapper.ConcertMapper;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
 
 @Path("/concert-service")
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ConcertResource {
 
@@ -21,6 +24,7 @@ public class ConcertResource {
 
     @GET
     @Path("/concerts/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response retrieveConcert(@PathParam("id") long id) {
         EntityManager em = PersistenceManager.instance().createEntityManager();
         try {
@@ -29,7 +33,7 @@ public class ConcertResource {
             em.getTransaction().begin();
 
             // Or just the load object by ID.
-            Concert concert = em.find(Concert.class, id);
+            Concert concert = em.createQuery("select c from Concert c join c.dates d where d =: id", Concert.class).setParameter("id", id).getSingleResult();
             em.getTransaction().commit();
 
             if (concert == null) {
@@ -50,6 +54,7 @@ public class ConcertResource {
 
     @GET
     @Path("/concerts")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response retrieveConcerts() {
         EntityManager em = PersistenceManager.instance().createEntityManager();
 
@@ -58,7 +63,7 @@ public class ConcertResource {
             // Start a transaction for persisting the audit data.
             em.getTransaction().begin();
 
-            TypedQuery<Concert> concertsQuery = em.createQuery("select c from Concert c", Concert.class);
+            TypedQuery<Concert> concertsQuery = em.createQuery("select c from Concert c join c.dates d where d =: id", Concert.class);
             List<Concert> concerts = concertsQuery.getResultList();
 
             em.getTransaction().commit();
@@ -85,6 +90,7 @@ public class ConcertResource {
 
     @GET
     @Path("/concerts/summaries")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response retrieveConcertSummaries() {
         EntityManager em = PersistenceManager.instance().createEntityManager();
 
@@ -93,8 +99,7 @@ public class ConcertResource {
             // Start a transaction for persisting the audit data.
             em.getTransaction().begin();
 
-            TypedQuery<Concert> concertsQuery = em.createQuery("select c from Concert c", Concert.class);
-            List<Concert> concerts = concertsQuery.getResultList();
+            List<Concert> concerts = em.createQuery("SELECT c FROM Concert c").getResultList();
 
             em.getTransaction().commit();
 
@@ -106,8 +111,7 @@ public class ConcertResource {
             //Convert the Concerts to a list of ConcertDTO.
             List<ConcertSummaryDTO> dtoConcertsSummaries = new ArrayList<>();
             for (Concert c : concerts) {
-                ConcertSummaryDTO dtoConcertSummary = ConcertMapper.toConcertSummaryDto(c);
-                dtoConcertsSummaries.add(dtoConcertSummary);
+                dtoConcertsSummaries.add(ConcertMapper.toConcertSummaryDto(c));
             }
 
             Response.ResponseBuilder builder = Response.ok(dtoConcertsSummaries);

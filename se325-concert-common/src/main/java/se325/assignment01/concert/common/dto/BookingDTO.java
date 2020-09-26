@@ -19,8 +19,9 @@ import java.util.List;
 public class BookingDTO {
 
     private long concertId;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime date;
-    @ElementCollection
     private List<SeatDTO> seats = new ArrayList<>();
 
     public BookingDTO() {
@@ -46,6 +47,8 @@ public class BookingDTO {
         return date;
     }
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public void setDate(LocalDateTime date) {
         this.date = date;
     }

@@ -7,32 +7,25 @@ import se325.assignment01.concert.service.domain.Concert;
 public class ConcertMapper {
 
     static Concert toDomainModel(ConcertDTO ConcertDTO) {
-        Concert fullConcert;
-        fullConcert = new Concert(ConcertDTO.getId(),
+        return new Concert(ConcertDTO.getId(),
                 ConcertDTO.getTitle(),
                 ConcertDTO.getImageName(),
                 ConcertDTO.getBlurb());
-        return fullConcert;
     }
 
     public static ConcertDTO toDto(Concert concert) {
-        ConcertDTO dtoConcert =
-                new ConcertDTO(
-                        concert.getId(),
-                        concert.getTitle(),
-                        concert.getImageName(),
-                        concert.getBlurb());
-        return dtoConcert;
+        return new ConcertDTO(
+                concert.getId(),
+                concert.getTitle(),
+                concert.getImageName(),
+                concert.getBlurb());
 
     }
 
     public static ConcertSummaryDTO toConcertSummaryDto(Concert concert) {
-        ConcertSummaryDTO dtoConcertSummary =
-                new ConcertSummaryDTO(
+        return new ConcertSummaryDTO(
                         concert.getId(),
                         concert.getTitle(),
                         concert.getImageName());
-        return dtoConcertSummary;
-
     }
 }

@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 public class ConcertInfoSubscriptionDTO {
 
     private long concertId;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime date;
     private int percentageBooked;
 
@@ -40,15 +42,19 @@ public class ConcertInfoSubscriptionDTO {
         this.concertId = concertId;
     }
 
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public LocalDateTime getDate() {
         return date;
     }
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
+
 
     public int getPercentageBooked() {
         return percentageBooked;

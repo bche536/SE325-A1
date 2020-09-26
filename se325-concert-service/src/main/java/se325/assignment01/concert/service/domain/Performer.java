@@ -5,24 +5,34 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import se325.assignment01.concert.common.types.Genre;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "PERFORMER")
-public class Performer implements Comparable<Performer> {
+@Table(name = "PERFORMERS")
+public class Performer {
 
     @Id
     @GeneratedValue
     private Long id;
+
+    @Column(name = "NAME", nullable = false, length = 255)
     private String name;
+
+    @Column(name = "IMAGE_NAME", nullable = false, length = 255)
     private String imageName;
+
+    @Column(name = "GENRE", nullable = false, length = 255)
+    @Enumerated(EnumType.STRING)
     private Genre genre;
+
+    @Column(name = "BLURB", nullable = false, length = 1024)
     private String blurb;
-    @ManyToMany
-    @JoinColumn(name = "CONCERT_ID")
-    private Set<Concert> concerts;
+
+//    @ManyToMany()
+//    private Set<Concert> concerts = new HashSet<>();
+
     public Performer() {
     }
 
@@ -58,10 +68,12 @@ public class Performer implements Comparable<Performer> {
         this.imageName = imageName;
     }
 
+    @Enumerated(EnumType.STRING)
     public Genre getGenre() {
         return genre;
     }
 
+    @Enumerated(EnumType.STRING)
     public void setGenre(Genre genre) {
         this.genre = genre;
     }
@@ -74,49 +86,12 @@ public class Performer implements Comparable<Performer> {
         this.blurb = blurb;
     }
 
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("Performer, id: ");
-        buffer.append(id);
-        buffer.append(", name: ");
-        buffer.append(name);
-        buffer.append(", genre: ");
-        buffer.append(genre.toString());
-        buffer.append(", blurb: ");
-        buffer.append(blurb);
+//    public Set<Concert> getConcerts() {
+//        return concerts;
+//    }
+//
+//    public void setConcerts(Set<Concert> concerts) {
+//        this.concerts = concerts;
+//    }
 
-        return buffer.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Performer that = (Performer) o;
-
-        return new EqualsBuilder()
-                .append(id, that.id)
-                .append(name, that.name)
-                .append(imageName, that.imageName)
-                .append(genre, that.genre)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(id)
-                .append(name)
-                .append(imageName)
-                .append(genre)
-                .toHashCode();
-    }
-
-    @Override
-    public int compareTo(Performer other) {
-        return other.getName().compareTo(getName());
-    }
 }

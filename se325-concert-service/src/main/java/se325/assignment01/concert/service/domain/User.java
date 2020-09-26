@@ -7,15 +7,23 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User {
     @Id
     @GeneratedValue
+    @Column(name = "Id", nullable = false, length = 255)
     private Long id;
+
+    @Column(name = "USERNAME", nullable = false, length = 255)
     private String username;
+
+    @Column(name = "PASSWORD", nullable = false, length = 255)
     private String password;
 
-    protected User() {
+    @Column(name = "VERSION", nullable = false, length = 255)
+    private int version;
+
+    public User() {
     }
 
     public User(Long id, String username, String password) {
@@ -24,52 +32,37 @@ public class User {
         this.password = password;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     @Id
     public Long getId() {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
         return password;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        return new EqualsBuilder()
-                .append(username, user.username)
-                .append(password, user.password)
-                .isEquals();
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(username)
-                .append(password)
-                .toHashCode();
+    public int getVersion() {
+        return version;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public void setVersion(int version) {
+        this.version = version;
     }
-
 }

@@ -1,25 +1,25 @@
 package se325.assignment01.concert.service.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import se325.assignment01.concert.common.dto.SeatDTO;
-import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
-import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Booking")
+@Table(name = "BOOKINGS")
 public class Booking {
 
     @Id
+    @Column
     private long concertId;
+
+    @Column
     private LocalDateTime date;
+
     @OneToMany
-    private List<Seat> seats = new ArrayList<>();
+    @CollectionTable(name = "BOOKING_SEATS", joinColumns = @JoinColumn(name = "BOOKING_ID"))
+    @Column(name = "SEATS")
+    private List<Seat> seat = new ArrayList<>();
 
     public Booking() {
 
@@ -28,7 +28,7 @@ public class Booking {
     public Booking(long concertId, LocalDateTime date, List<Seat> seats) {
         this.concertId = concertId;
         this.date = date;
-        this.seats = seats;
+        this.seat = seats;
     }
 
     public long getConcertId() {
@@ -39,8 +39,6 @@ public class Booking {
         this.concertId = concertId;
     }
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public LocalDateTime getDate() {
         return date;
     }
@@ -49,12 +47,12 @@ public class Booking {
         this.date = date;
     }
 
-    public List<Seat> getSeats() {
-        return seats;
+    public List<Seat> getSeat() {
+        return seat;
     }
 
-    public void setSeats(List<Seat> seats) {
-        this.seats = seats;
+    public void setSeat(List<Seat> seats) {
+        this.seat = seats;
     }
 
 }

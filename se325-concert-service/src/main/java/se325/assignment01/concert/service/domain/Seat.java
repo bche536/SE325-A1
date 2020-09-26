@@ -2,6 +2,7 @@ package se325.assignment01.concert.service.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.dom4j.QName;
 import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
 import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
 
@@ -12,17 +13,21 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Table(name = "SEAT")
 public class Seat {
 
     // TODO Implement this class.
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	private Long id;
 	private String label;
 	private boolean	isBooked;
 	private LocalDateTime date;
 	private BigDecimal price;
+	@ManyToOne
+	@JoinColumn(name = "BOOKING_ID")
+	private Booking booking;
 
 	public Seat() {}
 

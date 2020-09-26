@@ -74,6 +74,7 @@ public class ConcertDTO {
         this.blurb = blurb;
     }
 
+    @ElementCollection
     public List<LocalDateTime> getDates() {
         return dates;
     }

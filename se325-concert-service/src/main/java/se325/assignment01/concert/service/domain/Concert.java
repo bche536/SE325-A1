@@ -7,17 +7,16 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import se325.assignment01.concert.common.dto.PerformerDTO;
 import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
 import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
 
 @Entity
+@Table(name = "CONCERT")
 public class Concert implements  Comparable<Concert>{
 
     // TODO Implement this class.
@@ -31,7 +30,9 @@ public class Concert implements  Comparable<Concert>{
 
     @ElementCollection
     private Set<LocalDateTime> dates;
-    @ManyToMany
+    @ManyToMany(mappedBy="CONCERT", fetch=FetchType.EAGER,
+            cascade=CascadeType.ALL)
+    @JoinColumn(name = "PERFORMER_ID")
     private List<Performer> performers = new ArrayList<>();
 
     public Concert(Long id, String title, String imageName, String blurb) {

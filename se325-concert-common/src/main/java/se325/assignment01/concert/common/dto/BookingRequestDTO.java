@@ -1,5 +1,11 @@
 package se325.assignment01.concert.common.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import se325.assignment01.concert.common.jackson.LocalDateTimeDeserializer;
+import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
+
+import javax.persistence.ElementCollection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +20,7 @@ public class BookingRequestDTO {
 
     private long concertId;
     private LocalDateTime date;
+    @ElementCollection
     private List<String> seatLabels = new ArrayList<>();
 
     public BookingRequestDTO(){}
@@ -37,6 +44,8 @@ public class BookingRequestDTO {
         this.concertId = concertId;
     }
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public LocalDateTime getDate() {
         return date;
     }

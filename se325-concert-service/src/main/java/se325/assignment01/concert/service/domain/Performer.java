@@ -31,11 +31,9 @@ public class Performer {
     @Column(name = "BLURB", nullable = false, length = 1024)
     private String blurb;
 
-//    @ManyToMany()
-//    private Set<Concert> concerts = new HashSet<>();
+    @ManyToMany(mappedBy = "performers", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private Set<Concert> concerts = new HashSet<>();
 
-    public Performer() {
-    }
 
     public Performer(Long id, String name, String imageName, Genre genre, String blurb) {
         this.id = id;
@@ -87,12 +85,12 @@ public class Performer {
         this.blurb = blurb;
     }
 
-//    public Set<Concert> getConcerts() {
-//        return concerts;
-//    }
-//
-//    public void setConcerts(Set<Concert> concerts) {
-//        this.concerts = concerts;
-//    }
+    public Set<Concert> getConcerts() {
+        return concerts;
+    }
+
+    public void setConcerts(Set<Concert> concerts) {
+        this.concerts = concerts;
+    }
 
 }

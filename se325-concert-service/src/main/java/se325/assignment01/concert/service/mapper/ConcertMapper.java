@@ -35,7 +35,9 @@ public class ConcertMapper {
         for (Performer p : concert.getPerformers()) {
             performerDTOList.add(PerformerMapper.toDto(p));
         }
+        System.out.println("hello the performer set is:" + performerDTOList.toString());
         dtoConcert.setPerformers(performerDTOList);
+        System.out.println("hello the performer list is:" + performerDTOList.toString());
         return dtoConcert;
     }
 

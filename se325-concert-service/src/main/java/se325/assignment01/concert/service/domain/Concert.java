@@ -36,9 +36,8 @@ public class Concert {
     @Fetch(FetchMode.SUBSELECT)
     private Set<LocalDateTime> dates = new HashSet<>();
 
-    @ManyToMany(cascade={CascadeType.PERSIST,CascadeType.REMOVE})
+    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @CollectionTable(name = "CONCERT_PERFORMER")
-    @Column(name = "PERFORMER_ID")
     private Set<Performer> performers = new HashSet<>();
 
     public Concert(Long id, String title, String imageName, String blurb) {

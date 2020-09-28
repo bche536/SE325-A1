@@ -7,8 +7,9 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
 @Entity
 @Table(name = "CONCERTS")
 public class Concert {
@@ -16,7 +17,8 @@ public class Concert {
     // TODO Implement this class.
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @Column(name = "ID", nullable = false, length = 255)
     private Long id;
 
     @Column(name = "TITLE", nullable = false, length = 255)
@@ -28,15 +30,16 @@ public class Concert {
     @Column(name = "BLURB", nullable = false, length = 1024)
     private String blurb;
 
-    @ElementCollection
-    @CollectionTable(name = "CONCERT_DATES", joinColumns = @JoinColumn(name = "CONCERT_ID"))
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "CONCERT_DATES")
     @Column(name = "DATE")
+    @Fetch(FetchMode.SUBSELECT)
     private Set<LocalDateTime> dates = new HashSet<>();
 
     @ManyToMany(cascade={CascadeType.PERSIST,CascadeType.REMOVE})
-    @CollectionTable(name = "CONCERT_PERFORMER", joinColumns = @JoinColumn(name = "CONCERT_ID"))
+    @CollectionTable(name = "CONCERT_PERFORMER")
     @Column(name = "PERFORMER_ID")
-    private Set<Performer> performer = new HashSet<>();
+    private Set<Performer> performers = new HashSet<>();
 
     public Concert(Long id, String title, String imageName, String blurb) {
         this.id = id;
@@ -81,7 +84,6 @@ public class Concert {
         this.blurb = blurb;
     }
 
-
     public Set<LocalDateTime> getDates() {
         return dates;
     }
@@ -91,12 +93,12 @@ public class Concert {
     }
 
 
-    public Set<Performer> getPerformer() {
-        return performer;
+    public Set<Performer> getPerformers() {
+        return performers;
     }
 
     public void setPerformer(Set<Performer> dates) {
-        this.performer = performer;
+        this.performers = performers;
     }
 
 

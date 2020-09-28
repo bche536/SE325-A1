@@ -10,7 +10,7 @@ import java.util.List;
 public class Booking {
 
     @Id
-    @Column
+    @Column(name = "CONCERT_ID", nullable = false, length = 255)
     private long concertId;
 
     @Column

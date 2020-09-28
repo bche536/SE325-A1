@@ -7,6 +7,7 @@ import se325.assignment01.concert.common.jackson.LocalDateTimeSerializer;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +29,11 @@ public class ConcertDTO {
     private String title;
     private String imageName;
     private String blurb;
-    @ElementCollection
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+
+    @JsonSerialize(contentUsing = LocalDateTimeSerializer.class)
+    @JsonDeserialize(contentUsing = LocalDateTimeDeserializer.class)
     private List<LocalDateTime> dates = new ArrayList<>();
+
     private List<PerformerDTO> performers = new ArrayList<>();
 
     public ConcertDTO() {
@@ -81,16 +83,12 @@ public class ConcertDTO {
         this.blurb = blurb;
     }
 
-    @ElementCollection
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(contentUsing = LocalDateTimeSerializer.class)
+    @JsonDeserialize(contentUsing = LocalDateTimeDeserializer.class)
     public List<LocalDateTime> getDates() {
         return dates;
     }
 
-    @ElementCollection
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public void setDates(List<LocalDateTime> dates) {
         this.dates = dates;
     }
@@ -103,3 +101,4 @@ public class ConcertDTO {
         this.performers = performers;
     }
 }
+

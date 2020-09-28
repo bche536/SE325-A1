@@ -15,6 +15,7 @@ public class Performer {
 
     @Id
     @GeneratedValue
+    @Column(name = "ID", nullable = false, length = 255)
     private Long id;
 
     @Column(name = "NAME", nullable = false, length = 255)

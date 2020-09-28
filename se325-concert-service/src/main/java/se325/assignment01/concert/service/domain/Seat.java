@@ -20,15 +20,19 @@ public class Seat {
 
 	@Id
 	@GeneratedValue
+	@Column(name = "ID", nullable = false, length = 255)
 	private Long id;
 
-	@Column
+	@Column(name = "LABEL", nullable = false, length = 255)
 	private String label;
 
+	@Column(name = "IS_BOOKED", nullable = false, length = 255)
 	private boolean	isBooked;
 
-	@Column
+	@Column(name = "DATE", nullable = false, length = 255)
 	private LocalDateTime date;
+
+	@Column(name = "PRICE", nullable = false, length = 255)
 	private BigDecimal price;
 //	@ManyToOne
 //	private Booking booking;
@@ -36,7 +40,10 @@ public class Seat {
 	public Seat() {}
 
 	public Seat(String label, boolean isBooked, LocalDateTime date, BigDecimal price) {
-
+		this.label = label;
+		this.isBooked = isBooked;
+		this.date = date;
+		this.price = price;
 	}
 
 	public Long getId() {
@@ -47,6 +54,22 @@ public class Seat {
 		this.id = id;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public boolean isBooked() {
+		return isBooked;
+	}
+
+	public void setBooked(boolean booked) {
+		isBooked = booked;
+	}
+
 	public LocalDateTime getDate() {
 		return date;
 	}
@@ -54,5 +77,15 @@ public class Seat {
 	public void setDate(LocalDateTime date) {
 		this.date = date;
 	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+
 
 }

@@ -34,6 +34,9 @@ public class Performer {
     @ManyToMany(mappedBy = "performers", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Concert> concerts = new HashSet<>();
 
+public Performer() {
+
+}
 
     public Performer(Long id, String name, String imageName, Genre genre, String blurb) {
         this.id = id;

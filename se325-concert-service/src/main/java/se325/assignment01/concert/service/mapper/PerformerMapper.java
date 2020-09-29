@@ -4,7 +4,7 @@ import se325.assignment01.concert.common.dto.PerformerDTO;
 import se325.assignment01.concert.service.domain.Performer;
 
 public class PerformerMapper {
-    static PerformerDTO toDto(Performer performer) {
+    public static PerformerDTO toDto(Performer performer) {
         return new PerformerDTO(
                 performer.getId(),
                 performer.getName(),

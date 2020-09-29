@@ -27,15 +27,16 @@ public class Seat {
 	private String label;
 
 	@Column(name = "IS_BOOKED", nullable = false, length = 255)
-	private boolean	isBooked;
+	private boolean	isBooked= false;
 
 	@Column(name = "DATE", nullable = false, length = 255)
 	private LocalDateTime date;
 
 	@Column(name = "PRICE", nullable = false, length = 255)
 	private BigDecimal price;
-//	@ManyToOne
-//	private Booking booking;
+
+	@ManyToOne
+	private Booking booking;
 
 	public Seat() {}
 
@@ -84,6 +85,14 @@ public class Seat {
 
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+	public Booking getBooking() {
+		return booking;
+	}
+
+	public void setBooking(Booking booking) {
+		this.booking = booking;
 	}
 
 

@@ -5,6 +5,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "USERS")
@@ -23,6 +27,9 @@ public class User {
     @Column(name = "VERSION", length = 255)
     private int version;
 
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private Set<Booking> bookings = new HashSet<>();
+
     public User() {
     }
 
@@ -38,7 +45,6 @@ public class User {
     }
 
 
-    @Id
     public Long getId() {
         return id;
     }
@@ -69,5 +75,13 @@ public class User {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
     }
 }

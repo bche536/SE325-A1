@@ -10,25 +10,31 @@ import java.util.List;
 public class Booking {
 
     @Id
+    @GeneratedValue
+    @Column(name = "ID")
+    private Long id;
+
+    @ManyToOne
+    private User user;
+
     @Column(name = "CONCERT_ID", nullable = false, length = 255)
     private long concertId;
 
-    @Column
+    @Column(name = "DATE", nullable = false, length = 255)
     private LocalDateTime date;
 
     @OneToMany
-    @CollectionTable(name = "BOOKING_SEATS", joinColumns = @JoinColumn(name = "BOOKING_ID"))
-    @Column(name = "SEATS")
-    private List<Seat> seat = new ArrayList<>();
+    private List<Seat> seats = new ArrayList<>();
 
     public Booking() {
 
     }
 
-    public Booking(long concertId, LocalDateTime date, List<Seat> seats) {
+    public Booking(User user, long concertId, LocalDateTime date, List<Seat> seats) {
+        this.user = user;
         this.concertId = concertId;
         this.date = date;
-        this.seat = seats;
+        this.seats = seats;
     }
 
     public long getConcertId() {
@@ -47,12 +53,27 @@ public class Booking {
         this.date = date;
     }
 
-    public List<Seat> getSeat() {
-        return seat;
+    public List<Seat> getSeats() {
+        return seats;
     }
 
-    public void setSeat(List<Seat> seats) {
-        this.seat = seats;
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }

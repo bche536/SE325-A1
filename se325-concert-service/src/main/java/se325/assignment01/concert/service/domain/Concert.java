@@ -42,7 +42,7 @@ public class Concert {
             joinColumns = {@JoinColumn(name = "CONCERT_ID")},
             inverseJoinColumns = {@JoinColumn(name = "PERFORMER_ID")}
     )
-    @org.hibernate.annotations.Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Performer> performers = new HashSet<>();
 
     public Concert(Long id, String title, String imageName, String blurb) {

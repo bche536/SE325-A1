@@ -20,7 +20,7 @@ public class User {
     @Column(name = "PASSWORD", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "VERSION", nullable = false, length = 255)
+    @Column(name = "VERSION", length = 255)
     private int version;
 
     public User() {
@@ -28,6 +28,11 @@ public class User {
 
     public User(Long id, String username, String password) {
         this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
     }

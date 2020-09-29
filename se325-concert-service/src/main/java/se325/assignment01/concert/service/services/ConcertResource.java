@@ -2,7 +2,10 @@ package se325.assignment01.concert.service.services;
 
 import se325.assignment01.concert.common.dto.ConcertDTO;
 import se325.assignment01.concert.common.dto.ConcertSummaryDTO;
+import se325.assignment01.concert.common.dto.UserDTO;
 import se325.assignment01.concert.service.domain.Concert;
+import se325.assignment01.concert.service.domain.Cookie;
+import se325.assignment01.concert.service.domain.User;
 import se325.assignment01.concert.service.mapper.ConcertMapper;
 
 import javax.persistence.EntityManager;
@@ -11,6 +14,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +22,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.logging.ConsoleHandler;
 
 @Path("/concert-service")
-@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ConcertResource {
 
@@ -125,4 +128,45 @@ public class ConcertResource {
             em.close();
         }
     }
+
+    @POST
+    @Path("/login")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response userLogin(UserDTO dtoUser) {
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            //Query the db for a matching user
+            TypedQuery query = em.createQuery("SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class);
+            query.setParameter("username", dtoUser.getUsername());
+            query.setParameter("password", dtoUser.getPassword());
+
+            System.out.println(query.getSingleResult());
+
+
+            //Check if there is a matching user
+            if (query.getSingleResult() == null) {
+                // Return a HTTP 404 response if the specified Concert isn't found.
+                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            }
+
+
+            NewCookie httpCookie = new NewCookie("auth", dtoUser.getUsername());
+            Cookie databaseCookie = new Cookie(dtoUser.getUsername());
+            em.persist(databaseCookie);
+
+            em.getTransaction().commit();
+
+
+            Response.ResponseBuilder builder = Response.ok().cookie(httpCookie);
+
+            return builder.build();
+        } finally {
+            em.close();
+        }
+    }
 }
+

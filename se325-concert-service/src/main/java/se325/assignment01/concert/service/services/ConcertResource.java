@@ -15,6 +15,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
@@ -23,12 +25,13 @@ import java.awt.print.Book;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Path("/concert-service")
 @Produces(MediaType.APPLICATION_JSON)
 public class ConcertResource {
+
+    private static HashMap<ConcertInfoSubscriptionDTO, AsyncResponse> concertSubscriptions = new HashMap<ConcertInfoSubscriptionDTO, AsyncResponse>();
 
     // TODO Implement this.
 
@@ -241,7 +244,6 @@ public class ConcertResource {
         EntityManager em = PersistenceManager.instance().createEntityManager();
         LocalDateTime date = dateParam.getLocalDateTime();
 
-        System.out.println(status.toString());
 
         try {
             em.getTransaction().begin();
@@ -361,8 +363,6 @@ public class ConcertResource {
         try {
             em.getTransaction().begin();
 
-            System.out.println(userId + "hello\n");
-            System.out.println(Long.valueOf(userId));
             User authentication = em.find(User.class, Long.valueOf(userId));
 
             if (authentication == null) {
@@ -423,7 +423,7 @@ public class ConcertResource {
         TypedQuery<Seat> query;
         List<Seat> bookedSeats = new ArrayList<>();
 
-        //Check for date validity
+        //Check for if concert exists and date validity
         Concert concert = em.find(Concert.class, dtoBookingRequest.getConcertId());
         if(concert == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -461,6 +461,38 @@ public class ConcertResource {
 
         em.getTransaction().commit();
 
+        //Publish and subscribe
+        em.getTransaction().begin();
+        List<Seat> seatsTotalList = em.createQuery(
+                "select s from Seat s where s.date = :date", Seat.class)
+                .setParameter("date", dtoBookingRequest.getDate())
+                .getResultList();
+        List<Seat> bookedSeatsTotalList = em.createQuery(
+                "select s from Seat s where s.date = :date and s.isBooked = :true", Seat.class)
+                .setParameter("date", dtoBookingRequest.getDate()).setParameter("true", true)
+                .getResultList();
+        int seatsTotal = seatsTotalList.size();
+        int bookedSeatsTotal = bookedSeatsTotalList.size();
+
+        em.getTransaction().commit();
+
+        int percentageBooked = (bookedSeatsTotal * 100) / seatsTotal;
+        int numSeatsRemaining = seatsTotal - bookedSeatsTotal;
+        List<ConcertInfoSubscriptionDTO> toRemove = new ArrayList<>();
+
+        for (ConcertInfoSubscriptionDTO dtoConcertInfoSub: concertSubscriptions.keySet()) {
+            if (concert.getId().equals(dtoConcertInfoSub.getConcertId()) && dtoConcertInfoSub.getDate().equals(dtoBookingRequest.getDate())) {
+                if (dtoConcertInfoSub.getPercentageBooked() < percentageBooked) {
+                    concertSubscriptions.get(dtoConcertInfoSub).resume(new ConcertInfoNotificationDTO(numSeatsRemaining));
+                    toRemove.add(dtoConcertInfoSub);
+                }
+            }
+        }
+
+        for(ConcertInfoSubscriptionDTO c : toRemove) {
+            concertSubscriptions.remove(c);
+        }
+
         try {
             URI uri = new URI("http://localhost:10000/services/concert-service/bookings/" + booking.getId());
                     return Response.status(Response.Status.CREATED).location(uri).build();
@@ -470,6 +502,55 @@ public class ConcertResource {
     } finally {
             em.close();
         }
+    }
+
+    @POST
+    @Path("/subscribe/concertInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void subscribeToMessage(@Suspended AsyncResponse sub, @CookieParam("auth") Cookie cookie, ConcertInfoSubscriptionDTO dtoConcertInfoSub) {
+        //Authenticate cookie
+        if(cookie == null) {
+            // Return a HTTP 401
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
+
+        String userId = cookie.getValue();
+
+        if(userId == null) {
+            // Return a HTTP 401
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
+
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            //Authenticate user
+            User authentication = em.find(User.class, Long.valueOf(userId));
+
+            if(authentication == null) {
+                // Return a HTTP 401
+                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            }
+
+            // Validate the concert and date
+            Concert concert = em.find(Concert.class, dtoConcertInfoSub.getConcertId());
+            if(concert == null) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
+            else if(!concert.getDates().contains(dtoConcertInfoSub.getDate())){
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
+
+            em.getTransaction().commit();
+
+            concertSubscriptions.put(dtoConcertInfoSub, sub);
+
+        }   finally {
+            em.close();
+        }
+
     }
 
 }

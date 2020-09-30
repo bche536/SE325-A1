@@ -30,7 +30,7 @@ public class Concert {
     @Column(name = "BLURB", nullable = false, length = 1024)
     private String blurb;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "CONCERT_DATES")
     @Column(name = "DATE")
     @Fetch(FetchMode.SUBSELECT)

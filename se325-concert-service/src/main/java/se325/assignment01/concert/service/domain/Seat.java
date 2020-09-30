@@ -35,6 +35,10 @@ public class Seat {
 	@Column(name = "PRICE", nullable = false, length = 255)
 	private BigDecimal price;
 
+	@Version
+	@Column(name = "VERSION", nullable = false, length = 255)
+	private int version;
+
 	@ManyToOne
 	private Booking booking;
 

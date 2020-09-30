@@ -1,7 +1,5 @@
 package se325.assignment01.concert.service.services;
 
-import netscape.javascript.JSObject;
-import org.h2.util.json.JSONObject;
 import se325.assignment01.concert.common.dto.*;
 import se325.assignment01.concert.common.types.BookingStatus;
 import se325.assignment01.concert.service.domain.*;
@@ -21,7 +19,6 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import java.awt.print.Book;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
@@ -31,7 +28,8 @@ import java.util.*;
 @Produces(MediaType.APPLICATION_JSON)
 public class ConcertResource {
 
-    private static HashMap<ConcertInfoSubscriptionDTO, AsyncResponse> concertSubscriptions = new HashMap<ConcertInfoSubscriptionDTO, AsyncResponse>();
+    private static HashMap<ConcertInfoSubscriptionDTO, AsyncResponse>
+            concertSubscriptions = new HashMap<ConcertInfoSubscriptionDTO, AsyncResponse>();
 
     // TODO Implement this.
 
@@ -213,7 +211,8 @@ public class ConcertResource {
             em.getTransaction().begin();
 
             //Query the db for a matching user
-            TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class);
+            TypedQuery<User> query = em.createQuery(
+                    "SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class);
             query.setParameter("username", dtoUser.getUsername());
             query.setParameter("password", dtoUser.getPassword());
 
@@ -370,7 +369,10 @@ public class ConcertResource {
                 throw new WebApplicationException(Response.Status.UNAUTHORIZED);
             }
 
-            List<Booking> bookings = em.createQuery("select b from Booking b where b.user.id =:userId", Booking.class).setParameter("userId", Long.valueOf(userId)).getResultList();
+            List<Booking> bookings = em.createQuery(
+                    "select b from Booking b where b.user.id =:userId", Booking.class)
+                    .setParameter("userId", Long.valueOf(userId))
+                    .getResultList();
             List<BookingDTO> dtoBookings = new ArrayList<>();
             for (Booking b : bookings) {
                 dtoBookings.add(BookingMapper.toDto(b));
@@ -390,6 +392,7 @@ public class ConcertResource {
     @Path("/bookings")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response makeBookingRequest(BookingRequestDTO dtoBookingRequest, @CookieParam("auth") Cookie cookie) {
+        // Authentication
         if(cookie == null) {
             // Return a HTTP 401
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
@@ -412,12 +415,14 @@ public class ConcertResource {
     try {
         em.getTransaction().begin();
 
-        User authentication = em.find(User.class, Long.valueOf(userId));
+        User authentication = em.find(User.class, Long.valueOf(userId), LockModeType.OPTIMISTIC);
 
         if(authentication == null) {
             // Return a HTTP 401
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
+
+        //End of Authentication
 
 
         TypedQuery<Seat> query;
@@ -437,6 +442,7 @@ public class ConcertResource {
             query = em.createQuery("SELECT s FROM Seat s WHERE s.label= :seatLabel AND s.date= :date", Seat.class);
             query.setParameter("seatLabel", s);
             query.setParameter("date", dtoBookingRequest.getDate());
+            query.setLockMode(LockModeType.OPTIMISTIC);
             Seat seat = query.getSingleResult();
             if(seat.isBooked()){
                 // One of the seats are already booked - do not commit or persist
@@ -463,6 +469,8 @@ public class ConcertResource {
 
         //Publish and subscribe
         em.getTransaction().begin();
+
+        //Calculate total number of seats [allows for different venues]
         List<Seat> seatsTotalList = em.createQuery(
                 "select s from Seat s where s.date = :date", Seat.class)
                 .setParameter("date", dtoBookingRequest.getDate())
@@ -489,6 +497,7 @@ public class ConcertResource {
             }
         }
 
+        // Remove separately to avoid potential concurrent modification
         for(ConcertInfoSubscriptionDTO c : toRemove) {
             concertSubscriptions.remove(c);
         }
@@ -507,7 +516,11 @@ public class ConcertResource {
     @POST
     @Path("/subscribe/concertInfo")
     @Produces(MediaType.APPLICATION_JSON)
-    public void subscribeToMessage(@Suspended AsyncResponse sub, @CookieParam("auth") Cookie cookie, ConcertInfoSubscriptionDTO dtoConcertInfoSub) {
+    public void subscribeToMessage(
+            @Suspended AsyncResponse sub,
+            @CookieParam("auth") Cookie cookie,
+            ConcertInfoSubscriptionDTO dtoConcertInfoSub) {
+
         //Authenticate cookie
         if(cookie == null) {
             // Return a HTTP 401

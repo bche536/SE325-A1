@@ -1,5 +1,8 @@
 package se325.assignment01.concert.service.domain;
 
+import org.checkerframework.checker.fenum.qual.Fenum;
+import org.hibernate.annotations.Fetch;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,7 +26,7 @@ public class Booking {
     @Column(name = "DATE", nullable = false, length = 255)
     private LocalDateTime date;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Seat> seats = new ArrayList<>();
 
     public Booking() {

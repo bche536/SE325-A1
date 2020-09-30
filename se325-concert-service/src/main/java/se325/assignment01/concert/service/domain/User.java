@@ -24,6 +24,7 @@ public class User {
     @Column(name = "PASSWORD", nullable = false, length = 255)
     private String password;
 
+    @Version
     @Column(name = "VERSION", length = 255)
     private int version;
 
